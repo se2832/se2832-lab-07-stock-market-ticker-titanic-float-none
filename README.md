@@ -12,6 +12,7 @@
 * Your goal is to identify and fix the defects in the code.
 * Submit a bug table, including original line numbers.  If you do not include original line numbers, you will lose **20 POINTS**.
 * Also submit a screenshot of the code coverage you achieved.
+* This should be in a file called writeup.md and added to your repository.
 
 
 ## Grading Criteria
