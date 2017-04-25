@@ -25,6 +25,8 @@ public class StockQuoteAnalyzerTest {
 
     private StockQuoteAnalyzer analyzer;
 
+    private static final double DELTA = 1e-15;
+
     @BeforeMethod
     public void setUp() throws Exception {
         generatorMock = mock(StockQuoteGeneratorInterface.class);
@@ -40,5 +42,33 @@ public class StockQuoteAnalyzerTest {
     @Test(expectedExceptions = InvalidStockSymbolException.class)
     public void constructorShouldThrowExceptionWhenSymbolIsInvalid() throws Exception {
         analyzer = new StockQuoteAnalyzer("ZZZZZZZZZ", generatorMock, audioMock);
+    }
+
+    @Test
+    public void getSymbolShouldReturnAppropriateSymbol() throws Exception {
+        // Arrange
+        analyzer = new StockQuoteAnalyzer("CBD", generatorMock, audioMock);
+
+        // Act
+        String symbol = analyzer.getSymbol();
+
+        // Assert
+        assertEquals("CBD", symbol);
+    }
+
+    @Test
+    public void getPreviousCloseShouldReturnPreviousClosingValue() throws Exception {
+        // Arrange
+        analyzer = new StockQuoteAnalyzer("CBD", generatorMock, audioMock);
+        StockQuoteInterface stockQuote = new StockQuote("CBD", 35.5, 40.0, 5.0);
+
+        when(generatorMock.getCurrentQuote()).thenReturn(stockQuote);
+
+        // Act
+        analyzer.refresh();
+        double closeValue = analyzer.getPreviousClose();
+
+        // Assert
+        assertEquals(closeValue, 35.5, DELTA);
     }
 }
