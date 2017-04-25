@@ -38,7 +38,7 @@ public class StockQuoteAnalyzerTest {
     }
 
     @Test(expectedExceptions = InvalidStockSymbolException.class)
-    public void testInvalidStockSymbol() throws Exception {
+    public void constructorShouldThrowExceptionWhenSymbolIsInvalid() throws Exception {
         analyzer = new StockQuoteAnalyzer("ZZZZZZZZZ", generatorMock, audioMock);
     }
 }
