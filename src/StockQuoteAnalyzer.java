@@ -182,9 +182,9 @@ public class StockQuoteAnalyzer {
 	 */
 	public double getChangeSinceClose() throws InvalidAnalysisState {
 		if (currentQuote == null) {
-			throw new NullPointerException("No quote has ever been retrieved.");
+			throw new InvalidAnalysisState("No quote has ever been retrieved.");
 		}
-		return currentQuote.getChange()-currentQuote.getClose();
+		return currentQuote.getChange();
 	}
 
 	/**

@@ -1,3 +1,4 @@
+import exceptions.InvalidAnalysisState;
 import exceptions.InvalidStockSymbolException;
 import exceptions.StockTickerConnectionError;
 import org.testng.annotations.AfterMethod;
@@ -104,5 +105,73 @@ public class StockQuoteAnalyzerTest {
 
         // Assert
         assertEquals(closeValue, 35.5, DELTA);
+    }
+
+    @Test (expectedExceptions = InvalidAnalysisState.class)
+    public void getPreviousCloseShouldThrowExceptionWhenNotRefreshed() throws Exception {
+        // Arrange
+        analyzer = new StockQuoteAnalyzer("CBD", generatorMock, audioMock);
+        StockQuoteInterface stockQuote = new StockQuote("CBD", 35.5, 40.0, 5.0);
+
+        when(generatorMock.getCurrentQuote()).thenReturn(stockQuote);
+
+        // Act
+        double closeValue = analyzer.getPreviousClose();
+    }
+
+    @Test
+    public void getCurrentPriceShouldReturnAccuratePriceWhenCalled() throws Exception {
+        // Arrange
+        analyzer = new StockQuoteAnalyzer("CBD", generatorMock, audioMock);
+        StockQuoteInterface stockQuote = new StockQuote("CBD", 35.5, 40.0, 5.0);
+
+        when(generatorMock.getCurrentQuote()).thenReturn(stockQuote);
+
+        // Act
+        analyzer.refresh();
+        double closeValue = analyzer.getCurrentPrice();
+
+        // Act
+        assertEquals(closeValue, 40.0, DELTA);
+    }
+
+    @Test (expectedExceptions = InvalidAnalysisState.class)
+    public void getCurrentPriceShouldThrowExceptionWhenNotRefreshed() throws Exception {
+        // Arrange
+        analyzer = new StockQuoteAnalyzer("CBD", generatorMock, audioMock);
+        StockQuoteInterface stockQuote = new StockQuote("CBD", 35.5, 40.0, 5.0);
+
+        when(generatorMock.getCurrentQuote()).thenReturn(stockQuote);
+
+        // Act
+        double closeValue = analyzer.getCurrentPrice();
+    }
+
+    @Test (expectedExceptions = InvalidAnalysisState.class)
+    public void getChangeSinceCloseShouldThrowExceptionWhenNotRefreshed() throws Exception {
+        // Arrange
+        analyzer = new StockQuoteAnalyzer("CBD", generatorMock, audioMock);
+        StockQuoteInterface stockQuote = new StockQuote("CBD", 35.5, 40.0, 5.0);
+
+        when(generatorMock.getCurrentQuote()).thenReturn(stockQuote);
+
+        // Act
+        double closeValue = analyzer.getChangeSinceClose();
+    }
+
+    @Test
+    public void getChangeSinceCloseShouldReturnAccurateChangeSinceClose() throws Exception {
+        // Arrange
+        analyzer = new StockQuoteAnalyzer("CBD", generatorMock, audioMock);
+        StockQuoteInterface stockQuote = new StockQuote("CBD", 35.5, 40.0, 5.0);
+
+        when(generatorMock.getCurrentQuote()).thenReturn(stockQuote);
+
+        // Act
+        analyzer.refresh();
+        double closeValue = analyzer.getChangeSinceClose();
+
+        // Assert
+        assertEquals(closeValue, 5.0, DELTA);
     }
 }
