@@ -1,3 +1,4 @@
+import exceptions.InvalidAnalysisState;
 import exceptions.InvalidStockSymbolException;
 import exceptions.StockTickerConnectionError;
 import org.testng.annotations.AfterMethod;
@@ -25,7 +26,7 @@ public class StockQuoteAnalyzerTest {
 
     private StockQuoteAnalyzer analyzer;
 
-    private static final double DELTA = 1e-15;
+    private static final double DELTA = 1e-5;
 
     @BeforeMethod
     public void setUp() throws Exception {
@@ -104,5 +105,33 @@ public class StockQuoteAnalyzerTest {
 
         // Assert
         assertEquals(closeValue, 35.5, DELTA);
+    }
+
+    @Test
+    public void getChangeSinceLastCheckShouldReturnDifferenceWhenCalled() throws Exception{
+        analyzer = new StockQuoteAnalyzer("HOG", generatorMock, audioMock);
+        StockQuoteInterface stockQuote = new StockQuote("HOG", 35.5,40.0,5.0);
+        StockQuoteInterface stockQuote1 = new StockQuote("HOG", 35.5, 43.2,8.2);
+        when(generatorMock.getCurrentQuote()).thenReturn(stockQuote).thenReturn(stockQuote1);
+
+        //act
+        analyzer.refresh();
+        analyzer.refresh();
+        double lastCheckDifference = analyzer.getChangeSinceLastCheck();
+
+        assertEquals(lastCheckDifference, 3.2, DELTA);
+    }
+
+    @Test (expectedExceptions = InvalidAnalysisState.class)
+    public void getChangeSinceLastCheckShouldThrowExceptionWhenCalledPrematurly() throws Exception{
+        analyzer = new StockQuoteAnalyzer("HOG", generatorMock, audioMock);
+        StockQuoteInterface stockQuote = new StockQuote("HOG", 35.5,40.0,5.0);
+        when(generatorMock.getCurrentQuote()).thenReturn(stockQuote);
+
+        //act
+        analyzer.refresh();
+
+        //assert
+        analyzer.getChangeSinceLastCheck();
     }
 }
